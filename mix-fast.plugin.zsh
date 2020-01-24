@@ -12,7 +12,7 @@ _mix_does_task_list_need_generating () {
 }
 
 _mix_generate () {
-  mix help | grep '^mix [^ ]' | sed -E "s/mix ([^ ]*) *# (.*)/\1:\2/" > .mix_tasks
+  mix help | grep "^mix [^ ]" | sed -E "s/mix ([^ ]*) *# (.*)/\1:\2/" > .mix_tasks
 }
 
 _mix () {
@@ -21,10 +21,32 @@ _mix () {
       echo "\nGenerating .mix_tasks..." > /dev/stderr
       _mix_generate
     fi
+
     local tasks=(${(f)"$(cat .mix_tasks)"})
-    _describe 'tasks' tasks
+    _arguments -C ": :->command" "*:: :->args"
+
+    case $state in
+      (command)
+          _describe "tasks" tasks
+          return
+      ;;
+
+      (args)
+        case $line[1] in
+          (help)
+            _describe "tasks" tasks
+            ;;
+          (test)
+            _files
+            ;;
+          (run)
+            _files
+            ;;
+        esac
+      ;;
+    esac
   fi
 }
 
 compdef _mix mix
-alias mix_refresh='_mix_refresh'
+alias mix_refresh="_mix_refresh"
