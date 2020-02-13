@@ -36,10 +36,7 @@ _mix () {
           (help)
             _describe "tasks" tasks
             ;;
-          (test)
-            _files
-            ;;
-          (run)
+          (format | test* | run)
             _files
             ;;
         esac
